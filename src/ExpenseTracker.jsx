@@ -130,7 +130,7 @@ function ExpenseTracker() {
 
   return (
     <div className='container'>
-      <h1>Expense Tracker</h1>
+      <h1>Expense Manager</h1>
       <div className='input-container'>
         <input type='text'
         placeholder='Expense'
@@ -222,7 +222,7 @@ function ExpenseTracker() {
       </div>
       <div className="total">
         <h2>Total Amount: {totalAmount}</h2>
-        <h2>savings: {income - totalAmount}</h2>
+        <h2>Savings: {income - totalAmount}</h2>
       </div>
     </div>
   )
