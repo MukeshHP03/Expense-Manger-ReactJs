@@ -15,9 +15,12 @@
 }
 .input-container{
     /* border: 1px solid black; */
-    display: flex;
-    flex-direction: column;
-    width: 400px;
+    /* display: flex; */
+    /* flex-direction: column; */
+    display: grid;
+    grid-template-columns: repeat(2, 250px);
+    /* grid-template-rows: repeat(2, 30px); */
+    /* width: 400px; */
     gap: 10px;
     /* margin: 20px; */
 }
@@ -50,8 +53,16 @@
     background-color: rgba(0, 225, 255, 1);
 
 }
-.display{
+.filter-category{
     border: 1px solid black;
+    height: 1.5rem;
+    min-width: 130px;
+    max-width: 200px;
+    font-size: 15px;
+    border-radius: 5px;
+}
+.display{
+    /* border: 1px solid black; */
     width: 80%;
 }
 .display ul{
@@ -61,7 +72,7 @@
     gap: 10px;
 }
 .display ul li{
-    border: 1px solid;
+    /* border: 1px solid; */
     display: flex;
     justify-content: space-between;
     font-size: 20px;

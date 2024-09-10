@@ -3,36 +3,46 @@ import './ExpenseTracker.css'
 
 function ExpenseTracker() {
     const [input, setInput] = useState('');
-    const [amount, setAmount] = useState('');
+    const [amount, setAmount] = useState(null);
     const [category, setCategory] = useState('');
     const [expenses, setExpenses] = useState([]);
     const [totalAmount, setTotalAmount] = useState(0);
     const [income, setIncome] = useState(0);
     const [editInput, setEditInput] = useState('');
-    const [editAmount, setEditAmount] = useState('');
+    const [editAmount, setEditAmount] = useState(null);
     const [editCategory, setEditCategory] = useState('');
     const [idToBeEdited, setIdToBeEdited] = useState(null);
+    const [categoryFilter, setCategoryFilter] = useState('');
     
     useEffect(() => {
-      // const storedExpenses = JSON.parse(localStorage.getItem('expenses')) || [];
-      // setExpenses(storedExpenses);
-      const userInput = (prompt('Enter your Income to Analyse your Expense'));
-      // console.log(userInput);
-      if(userInput || !isNaN(userInput) || parseFloat(userInput) > 0){
-        setIncome(parseFloat(userInput));
-        // setTotalAmount(userInput - )
+      const storedExpenses = JSON.parse(localStorage.getItem('expenses')) || [];
+      const storedTotalAmount = parseInt(localStorage.getItem('totalAmount'), 10) || 0;
+      const storedIncome = parseInt(localStorage.getItem('income'), 10) || 0;
+      if(storedTotalAmount < 0) storedTotalAmount = 0;
+      setExpenses(storedExpenses);
+      setTotalAmount(storedTotalAmount);
+      setIncome(storedIncome);
+      if(storedTotalAmount === 0 || storedIncome <= 0){
+        let userInput = parseFloat(prompt('Enter your Income to Analyse your Expense'));
+        // console.log(userInput);
+        if(!isNaN(userInput) && parseFloat(userInput) > 0){
+          while(userInput < storedTotalAmount){
+            userInput = parseFloat(prompt(`Income must be greater than total expense ${storedTotalAmount}. Please enter again:`));
+          }
+          setIncome(parseFloat(userInput));
+        }
+        else{
+          alert("Enter a Valid Income Amount, Please");
+        }
       }
-      else{
-        alert("Enter a Valid Income Amount Please");
-      }
-      // return
 
     },[]);
 
-    // useEffect(() => {
-    //   localStorage.setItem('expenses', JSON.stringify(expenses));
-    //   localStorage.setItem('amount', totalAmount);
-    // }, [expenses]);
+    useEffect(() => {
+      localStorage.setItem('expenses', JSON.stringify(expenses));
+      localStorage.setItem('totalAmount', totalAmount.toString());
+      localStorage.setItem('income', income.toString());
+    }, [expenses, totalAmount, income]);
 
     function addExpense(){
       if(!input || !amount || !category || isNaN(amount) || parseFloat(amount) <= 0){
@@ -47,7 +57,8 @@ function ExpenseTracker() {
         id: Date.now(),
         title: input,
         amount: parseFloat(amount),
-        category: category
+        category: category,
+        date: new Date().toLocaleDateString()
       }
       // console.log(newExpense);
       setTotalAmount(newExpense.amount + totalAmount);
@@ -61,7 +72,7 @@ function ExpenseTracker() {
     
     const deleteExpense = id => {
         const deletedExpense = expenses.find(expense => expense.id === id);
-        if(!deleteExpense) return;
+        if(!deletedExpense) return;
         const editableExpenses = expenses.filter((expense) => expense.id !== id);
         setExpenses(editableExpenses);
         setTotalAmount(totalAmount - deletedExpense.amount);
@@ -145,10 +156,25 @@ function ExpenseTracker() {
         />
         <button onClick={addExpense}>Add Expense</button>
       </div>
+
+        <select value={categoryFilter}
+        onChange={(e) => setCategoryFilter(e.target.value)} 
+        className="filter-category"
+        onKeyDown={handleKeyPress}
+          >
+          <option value='' >Filter Category</option>
+          <option value='Food' >Food</option>
+          <option value='Travel' >Travel</option>
+          <option value='Shopping' >Shopping</option>
+          {/* <option value='add-category' >Shopping</option> */}
+        </select>
+
       <div className='display'>
           <ul className='expense-list'>
             {
-              expenses.map(expense => (
+              expenses
+              .filter(expense => categoryFilter === '' || categoryFilter === expense.category)
+              .map(expense => (
                 <li key={expense.id} >
                   
                     {
